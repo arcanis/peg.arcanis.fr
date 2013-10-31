@@ -1,4 +1,8 @@
 * {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
     box-sizing: border-box;
 }
 
@@ -58,7 +62,16 @@ body {
     padding: 20px 10px;
 
     -webkit-transition: background-color .1s;
+    -moz-transition: background-color .1s;
+    -ms-transition: background-color .1s;
+    -o-transition: background-color .1s;
+    transition: background-color .1s;
+
     -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 }
 
 #navigation .actions a:hover {
@@ -151,6 +164,10 @@ body {
     font-size: 17px;
 
     -webkit-transition: bottom .1s;
+    -moz-transition: bottom .1s;
+    -ms-transition: bottom .1s;
+    -o-transition: bottom .1s;
+    transition: bottom .1s;
 }
 
 #output .box.hidden {

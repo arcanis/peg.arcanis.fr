@@ -134,8 +134,8 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
         $scope.version = 0;
 
         $scope.editors = {
-            grammar : { mode : 'pegjs', lineNumbers : true },
-            input : { mode : 'text', lineNumbers : true },
+            grammar : { mode : 'pegjs', lineNumbers : true, extraKeys : { "Ctrl-S" : function ( ) { $scope.save( ); } } },
+            input : { mode : 'text', lineNumbers : true, extraKeys : { "Ctrl-S" : function ( ) { $scope.save( ); } } },
             output : { mode : 'javascript', readOnly : 'nocursor' } };
 
         $scope.grammar = defaultGrammar;
@@ -151,6 +151,32 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
         $scope.reset = function ( ) {
 
             $location.path( '/' );
+
+        };
+
+        $scope.export = function ( ) {
+
+            try {
+
+                var parser = PEG.buildParser( $scope.grammar );
+                var source = parser.toSource( );
+
+                var symbol = prompt( 'In which symbol do you wish to export the parser ?', 'module.exports' );
+                if ( ! symbol ) return ;
+
+                var url = 'data:application/octet-stream;charset=utf-8;,' + symbol + '=' + source + ';\n';
+
+                var link = document.createElement( 'a' );
+                link.setAttribute( 'href', url );
+                link.setAttribute( 'download', 'parser.js' );
+
+                var event = document.createEvent( 'MouseEvents' );
+                event.initEvent( 'click', true, true );
+                link.dispatchEvent( event );
+
+            } catch ( e ) {
+
+            }
 
         };
 
