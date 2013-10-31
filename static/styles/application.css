@@ -1,0 +1,169 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+}
+
+[ng-click] {
+    cursor: pointer;
+}
+
+#navigation {
+    position: absolute;
+    left: 0; top: 0;
+
+    width: 250px;
+    height: 100%;
+
+    background-color: #34495e;
+
+    font-family: 'Lato', 'Open Sans';
+    font-size: 17px;
+    letter-spacing: 1px;
+    color: #ffffff;
+}
+
+#navigation .brand {
+    display: block;
+
+    padding: 20px 10px;
+
+    background: #1bbc9b;
+
+    text-decoration: none;
+    color: #34495E;
+}
+
+#navigation .brand .peg {
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+#navigation .actions {
+    padding: 0;
+    margin: 0;
+
+    list-style-type: none;
+}
+
+#navigation .actions a {
+    display: block;
+
+    padding: 20px 10px;
+
+    -webkit-transition: background-color .1s;
+    -webkit-user-select: none;
+}
+
+#navigation .actions a:hover {
+    background-color: #2d3e50;
+    color: #1bbc9b;
+}
+
+#navigation .actions a:active {
+    background-color: #3E556F;
+    color: #FFFFFF;
+}
+
+#navigation .copy {
+    position: absolute;
+    left: 0; bottom: 0;
+
+    width: 100%;
+    padding: 10px 0;
+
+    font-size: 15px;
+    text-align: center;
+    color: #778794;
+}
+
+#navigation .copy a {
+    color: inherit;
+    text-decoration: none;
+}
+
+#navigation .copy a:hover {
+    text-decoration: underline;
+}
+
+#content {
+    width: 100%;
+    height: 100%;
+
+    padding-left: 250px;
+}
+
+#grammar, #processing {
+    float: left;
+
+    width: 50%;
+    height: 100%;
+}
+
+#input, #output {
+    width: 100%;
+    height: 50%;
+}
+
+.editor {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+}
+
+.CodeMirror {
+    border: 1px solid #eee;
+    height: 100%;
+}
+
+.CodeMirror-scroll {
+    height: 100%;
+}
+
+#output {
+    position: relative;
+    overflow: hidden;
+}
+
+#output .CodeMirror {
+    background: #F3F3F3;
+}
+
+#output .box {
+    position: absolute;
+    left: 0; bottom: 0;
+
+    margin-top: 0;
+
+    width: 100%;
+    height: 55px;
+    line-height: 55px;
+    padding: 0 20px;
+
+    font-family: Lato;
+    font-size: 17px;
+
+    -webkit-transition: bottom .1s;
+}
+
+#output .box.hidden {
+    bottom: -55px;
+}
+
+#output .box-error {
+    color: #FFFFFF;
+    color: rgba(255, 255, 255, .8);
+    background: #E74C3C;
+}
+
+#output .box-warning {
+    border-color: #D69F9F;
+    background: #FFE1BB;
+}

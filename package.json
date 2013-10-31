@@ -1,0 +1,22 @@
+{
+    "name" : "peg.arcanis.fr",
+    "description" : "A nice web editor for peg.js grammars",
+
+    "scripts" : {
+        "start" : "node sources/server.js"
+    },
+
+    "dependencies" : {
+        "base62" : "*",
+        "express-params" : "*",
+        "express" : "*",
+        "optimist" : "*",
+        "q" : "*",
+        "sqlite3" : "*"
+    },
+
+    "config": {
+        "database" : "test.db",
+        "port" : 9090
+    }
+}
