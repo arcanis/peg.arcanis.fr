@@ -89,7 +89,7 @@ server.get( '/:key/:version/', function ( req, res ) {
 server.get( '/:key/:version/data', function ( req, res ) {
 
     fetch( req.params.key, parseInt( req.params.version ) ).then( function ( data ) {
-        if ( data ) res.json( data );
+        if ( data.current ) res.json( data );
         else res.send( 404 );
     }, function ( e ) {
         console.error( e );
