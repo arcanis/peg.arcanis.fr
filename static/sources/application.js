@@ -136,7 +136,11 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
         $scope.editors = {
             grammar : { mode : 'pegjs', lineNumbers : true, extraKeys : { "Ctrl-S" : function ( ) { $scope.save( ); } } },
             input : { mode : 'text', lineNumbers : true, extraKeys : { "Ctrl-S" : function ( ) { $scope.save( ); } } },
-            output : { mode : 'javascript', readOnly : 'nocursor' } };
+            output : { readOnly : 'nocursor', onLoad : function ( editor ) {
+                $scope.$watch( 'outputMode', function ( ) {
+                    editor.setOption( $scope.outputMode );
+                } );
+            } } };
 
         $scope.grammar = defaultGrammar;
         $scope.input   = defaultInput;
@@ -205,8 +209,15 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
 
             pegjs.process( $scope.grammar, $scope.input ).then( function ( data ) {
 
-                $scope.output = JSON.stringify( data, null, '    ' );
                 $scope.error = null;
+
+                if ( typeof data === 'string' ) {
+                    $scope.outputMode = 'text';
+                    $scope.output = data;
+                } else {
+                    $scope.outputMode = 'javascript';
+                    $scope.output = JSON.stringify( data, null, '    ' );
+                }
 
             }, function ( error ) {
 
