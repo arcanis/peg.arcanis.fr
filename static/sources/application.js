@@ -104,7 +104,7 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
                 if ( key === null ) {
 
                     var defer = $q.defer( );
-                    defer.resolve( { grammar : defaultGrammar, input : defaultInput } );
+                    defer.resolve( { current : { grammar : defaultGrammar, input : defaultInput } } );
                     return defer.promise;
 
                 } else {
@@ -194,8 +194,8 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
                 if ( ! data )
                     return ;
 
-                $scope.grammar = data.grammar;
-                $scope.input = data.input;
+                $scope.grammar = data.current.grammar;
+                $scope.input = data.current.input;
 
             } );
 

@@ -18,9 +18,12 @@ var run = function ( ) {
 var get = function ( ) {
     return Q.nfapply( db.get.bind( db ), arguments ); };
 
+var all = function ( ) {
+    return Q.nfapply( db.all.bind( db ), arguments ); };
+
 var save = function ( key, grammar, input ) {
 
-    return Q( { $grammar : grammar, $input : input } ).then( function ( descriptor ) {
+    return Q( { $grammar : grammar, $input : input, $timestamp : new Date( ).getTime( ) } ).then( function ( descriptor ) {
 
         return get( 'SELECT MAX( `id` ) AS `maxId` FROM `snippets`' ).then( function ( row ) {
             descriptor.$id = parseInt( row.maxId || 0 ) + 1;
@@ -51,7 +54,7 @@ var save = function ( key, grammar, input ) {
 
     } ).then( function ( descriptor ) {
 
-        return run( 'INSERT INTO `snippets` VALUES ( $id, $key, $version, $grammar, $input )', descriptor ).then( function ( ) {
+        return run( 'INSERT INTO `snippets` VALUES ( $id, $key, $version, $grammar, $input, $timestamp )', descriptor ).then( function ( ) {
             var keyPart = descriptor.$key + '/';
             var versionPart = descriptor.$version + '/';
             return '/' + ( descriptor.$version ? keyPart + versionPart : keyPart );
@@ -64,6 +67,12 @@ var save = function ( key, grammar, input ) {
 var fetch = function ( key, version ) {
     return get( 'SELECT `grammar`, `input` FROM `snippets` WHERE `key` = $key AND `version` = $version', {
         $key : key, $version : version
+    } ).then( function ( current ) {
+        return all( 'SELECT `key`, `version`, `grammar`, `input`, `timestamp` FROM `snippets` WHERE `key` = $key ORDER BY `timestamp` DESC', {
+            $key : key
+        } ).then( function ( history ) {
+            return { current : current, history : history };
+        } );
     } );
 };
 
@@ -82,7 +91,8 @@ server.get( '/:key/:version/data', function ( req, res ) {
     fetch( req.params.key, parseInt( req.params.version ) ).then( function ( data ) {
         if ( data ) res.json( data );
         else res.send( 404 );
-    }, function ( ) {
+    }, function ( e ) {
+        console.error( e );
         res.send( 500 );
     } );
 
@@ -93,12 +103,13 @@ server.post( '/save', function ( req, res ) {
     save( req.body.key, req.body.grammar, req.body.input ).then( function ( url ) {
         res.json( { url : url } );
     }, function ( e ) {
+        console.error( e );
         res.send( 500 );
     } );
 
 } );
 
-db.run( 'CREATE TABLE IF NOT EXISTS `snippets` (`id` INT, `key` TEXT, `version` INT, `grammar` TEXT, `input` TEXT)', function ( err ) {
+db.run( 'CREATE TABLE IF NOT EXISTS `snippets` (`id` INT, `key` TEXT, `version` INT, `grammar` TEXT, `input` TEXT, `timestamp` INT)', function ( err ) {
 
     if ( err )
         throw err;
