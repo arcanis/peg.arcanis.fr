@@ -39,7 +39,7 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
                     previousDefer.reject( );
 
                 var currentDefer = previousDefer = $q.defer( ), promise = currentDefer.promise;
-                cancelator.setTimeout( currentDefer, 500 );
+                cancelator.setTimeout( currentDefer, 750 );
 
                 var worker = new Worker( 'sources/pegworker.js' );
 
