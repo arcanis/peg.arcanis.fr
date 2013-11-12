@@ -1,23 +1,33 @@
 importScripts( '../vendors/Peg.js' );
 
-self.addEventListener( 'message', function ( e ) {
+var compile = function ( source, callback ) {
 
     var parser, value;
 
     try {
-        parser = PEG.buildParser( e.data.grammar );
+        parser = PEG.buildParser( source.grammar );
     } catch ( e ) {
-        self.postMessage( [ 'Compile error : ' + e.message ] );
+        callback( { type : 'compile' }, null );
         return ;
     }
 
     try {
-        value = parser.parse( e.data.input );
+        value = parser.parse( source.input );
     } catch ( e ) {
-        self.postMessage( [ 'Parse error : ' + e.message ] );
+        callback( { type : 'parse' }, null );
         return ;
     }
 
-    self.postMessage( [ null, value ] );
+    callback( null, value );
 
+};
+
+self.addEventListener( 'message', function ( e ) {
+    compile( e.data.source, function ( error, result ) {
+        self.postMessage( {
+            tid : e.data.tid,
+            error : error,
+            result : result
+        } );
+    } );
 } );

@@ -17,60 +17,86 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
 
         return {
             setTimeout : function ( deferrable, time ) {
-
                 $timeout( function ( ) {
-                    deferrable.reject( 'The process timeout\'d - check for a loop in your grammar !' );
+                    deferrable.reject( { type : 'timeout' } );
                 }, time );
-
             }
         };
 
     } )
 
-    .factory( 'pegjs', function ( $q, cancelator ) {
+    .factory( 'processorBuilder', function ( $q, cancelator ) {
 
-        var previousDefer = null;
+        var Processor = function ( url ) {
+
+            this._url = url;
+            this._worker = null;
+
+            this._currentTask = null;
+            this._currentId = 0;
+
+            this.restart( );
+
+        };
+
+        Processor.prototype.restart = function ( ) {
+
+            if ( this._worker )
+                this._worker.terminate( );
+
+            this._worker = new Worker( this._url );
+            this._worker.addEventListener( 'message', function ( e ) {
+                if ( this._currentTask.taskId !== e.data.tid ) return ;
+                if ( e.data.error ) this._currentTask.reject( e.data.error );
+                else this._currentTask.resolve( e.data.result );
+            }.bind( this ) );
+
+        };
+
+        Processor.prototype.send = function ( data ) {
+
+            if ( this._current )
+                this._current.reject( null );
+
+            var defer = $q.defer( ), promise = defer.promise;
+            cancelator.setTimeout( defer, 750 );
+
+            promise.catch( function ( e ) {
+                if ( ! e || e.type !== 'timeout' ) return ;
+                this.restart( );
+            }.bind( this ) );
+
+            this._currentTask = defer;
+            this._currentTask.taskId = this._currentId ++;
+
+            this._worker.postMessage( {
+                tid : this._currentTask.taskId,
+                source : data
+            } );
+
+            return promise;
+
+        };
 
         return {
+            create : function ( url ) {
+                return new Processor( url );
+            }
+        };
 
+    } )
+
+    .factory( 'pegjs', function ( $q, processorBuilder ) {
+
+        var processor = processorBuilder.create( 'sources/pegworker.js' );
+
+        return {
             process : function ( grammar, input ) {
-
-                if ( previousDefer !== null )
-                    previousDefer.reject( );
-
-                var currentDefer = previousDefer = $q.defer( ), promise = currentDefer.promise;
-                cancelator.setTimeout( currentDefer, 750 );
-
-                var worker = new Worker( 'sources/pegworker.js' );
-
-                worker.addEventListener( 'message', function ( e ) {
-
-                    if ( ! currentDefer )
-                        return ;
-
-                    if ( e.data[ 0 ] ) {
-                        currentDefer.reject( e.data[ 0 ] );
-                    } else {
-                        currentDefer.resolve( e.data[ 1 ] );
-                    }
-
-                } );
-
-                worker.postMessage( {
+                return processor.send( {
                     grammar : grammar,
                     input : input
                 } );
-
-                promise.finally( function ( ) {
-                    worker.terminate( );
-                    currentDefer = null;
-                    previousDefer = null;
-                } );
-
-                return currentDefer.promise;
-
             }
-
         };
 
     } )
@@ -147,16 +173,10 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
         $scope.output  = null;
 
         $scope.save = function ( ) {
-
-            server.save( $scope.key, $scope.grammar, $scope.input );
-
-        };
+            server.save( $scope.key, $scope.grammar, $scope.input ); };
 
         $scope.reset = function ( ) {
-
-            $location.path( '/' );
-
-        };
+            $location.path( '/' ); };
 
         $scope.export = function ( ) {
 
@@ -224,7 +244,7 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
                 if ( ! error )
                     return ;
 
-                $scope.error = error;
+                $scope.error = error.type;
 
             } );
 
