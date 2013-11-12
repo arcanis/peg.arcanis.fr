@@ -40,6 +40,7 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
 
             this._url = url;
             this._worker = null;
+            this._ready = null;
 
             this._currentTask = null;
             this._currentId = 0;
@@ -53,11 +54,26 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
             if ( this._worker )
                 this._worker.terminate( );
 
+            var defer = $q.defer( ), promise = defer.promise;
+            this._ready = promise;
+
             this._worker = new Worker( this._url );
             this._worker.addEventListener( 'message', function ( e ) {
-                if ( this._currentTask.taskId !== e.data.tid ) return ;
-                if ( e.data.error ) this._currentTask.reject( e.data.error );
-                else this._currentTask.resolve( e.data.result );
+
+                if ( e.data === 'ready' ) {
+
+                    defer.resolve( );
+
+                } else if ( this._currentTask.taskId === e.data.tid ) {
+
+                    if ( e.data.error ) {
+                        this._currentTask.reject( e.data.error );
+                    } else {
+                        this._currentTask.resolve( e.data.result );
+                    }
+
+                }
+
             }.bind( this ) );
 
         };
@@ -68,7 +84,6 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
                 this._current.reject( null );
 
             var defer = $q.defer( ), promise = defer.promise;
-            cancelator.setTimeout( defer, 750 );
 
             promise.catch( function ( e ) {
                 if ( ! e || e.type !== 'timeout' ) return ;
@@ -78,10 +93,16 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
             this._currentTask = defer;
             this._currentTask.taskId = this._currentId ++;
 
-            this._worker.postMessage( {
-                tid : this._currentTask.taskId,
-                source : data
-            } );
+            this._ready.then( function ( ) {
+
+                cancelator.setTimeout( defer, 750 );
+
+                this._worker.postMessage( {
+                    tid : this._currentTask.taskId,
+                    source : data
+                } );
+
+            }.bind( this ) );
 
             return promise;
 
