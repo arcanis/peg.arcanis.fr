@@ -7,14 +7,29 @@ var compile = function ( source, callback ) {
     try {
         parser = PEG.buildParser( source.grammar );
     } catch ( e ) {
-        callback( { type : 'compile' }, null );
+        callback( e.name !== 'PEG.GrammarError' ? {
+            type : 'compile',
+            line : e.line,
+            column : e.column,
+            expected : e.expected,
+            found : e.found
+        } : {
+            type : 'compile',
+            message : e.message
+        }, null );
         return ;
     }
 
     try {
         value = parser.parse( source.input );
     } catch ( e ) {
-        callback( { type : 'parse' }, null );
+        callback( {
+            type : 'parse',
+            line : e.line,
+            column : e.column,
+            expected : e.expected,
+            found : e.found
+        }, null );
         return ;
     }
 

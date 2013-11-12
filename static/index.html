@@ -53,7 +53,22 @@
                 </div>
                 <div id="output">
                     <textarea class="editor" ui-codemirror="editors.output" ng-model="output"></textarea>
-                    <div class="box box-error" ng-class="{ 'hidden' : !!! error }">{{ error }}</div>
+                    <div ng-switch="error.type" ng-class="{ 'hidden' : !!! error }" class="infos">
+                        <div ng-switch-when="timeout" class="box box-error">
+                            <strong>Fatal Error</strong> PEG.js timeouted while trying to compile your grammar. Check for a bad recursion.
+                        </div>
+                        <div ng-switch-when="compile" class="box box-warning">
+                            <div ng-if="error.message">
+                                <strong>Compile Error</strong> {{ error.message }}
+                            </div>
+                            <div ng-if="! error.message">
+                                <strong>Compile Error</strong> Line {{ error.line }}, column {{ error.column }} : Expected {{ error.expected | tokens }}, got {{ error.found | tokens }}
+                            </div>
+                        </div>
+                        <div ng-switch-when="parse" class="box box-warning">
+                            <strong>Parse Error</strong> Line {{ error.line }}, column {{ error.column }} : Expected {{ error.expected | tokens }}, got {{ error.found | tokens }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
