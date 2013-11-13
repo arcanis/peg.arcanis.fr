@@ -80,10 +80,11 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
 
         Processor.prototype.send = function ( data ) {
 
-            if ( this._current )
-                this._current.reject( null );
+            if ( this._currentTask )
+                this._currentTask.reject( null );
 
             var defer = $q.defer( ), promise = defer.promise;
+            var id = this._currentId ++;
 
             promise.catch( function ( e ) {
                 if ( ! e || e.type !== 'timeout' ) return ;
@@ -91,14 +92,14 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
             }.bind( this ) );
 
             this._currentTask = defer;
-            this._currentTask.taskId = this._currentId ++;
+            this._currentTask.taskId = id;
 
             this._ready.then( function ( ) {
 
                 cancelator.setTimeout( defer, 750 );
 
                 this._worker.postMessage( {
-                    tid : this._currentTask.taskId,
+                    tid : id,
                     source : data
                 } );
 
