@@ -13,15 +13,6 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
 
     } )
 
-    .filter( 'tokens', function ( ) {
-        return function ( tokens ) {
-            if ( tokens === null ) return 'EOF';
-            if ( tokens instanceof Array && tokens.length > 1 )
-                return tokens.slice( 0, tokens.length - 1 ).join( ', ' ) + ' or ' + tokens[ tokens.length - 1 ];
-            return tokens.toString( );
-        };
-    } )
-
     .factory( 'cancelator', function ( $timeout ) {
 
         return {
