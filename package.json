@@ -1,6 +1,7 @@
 {
     "name" : "peg.arcanis.fr",
     "description" : "A nice web editor for peg.js grammars",
+    "version" : "1.0.0",
 
     "scripts" : {
         "start" : "node sources/server.js"
