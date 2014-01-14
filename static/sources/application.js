@@ -210,7 +210,7 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
                 var symbol = prompt( 'In which symbol do you wish to export the parser ?', 'module.exports' );
                 if ( ! symbol ) return ;
 
-                var url = 'data:application/octet-stream;charset=utf-8;,' + symbol + '=' + source + ';\n';
+                var url = 'data:application/octet-stream;charset=utf-8;,' + encodeURIComponent( symbol + '=' + source + ';\n' );
 
                 var link = document.createElement( 'a' );
                 link.setAttribute( 'href', url );
