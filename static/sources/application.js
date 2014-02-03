@@ -204,8 +204,7 @@ angular.module( 'app', [ 'ngRoute', 'ui.codemirror' ] )
 
             try {
 
-                var parser = PEG.buildParser( $scope.grammar );
-                var source = parser.toSource( );
+                var source = PEG.buildParser( $scope.grammar, { output : 'source', optimize : 'speed' } );
 
                 var symbol = prompt( 'In which symbol do you wish to export the parser ?', 'module.exports' );
                 if ( ! symbol ) return ;
