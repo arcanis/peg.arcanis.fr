@@ -10,7 +10,7 @@
     "dependencies" : {
         "base62" : "*",
         "express-params" : "*",
-        "express" : "*",
+        "express" : "~3.5.1",
         "optimist" : "*",
         "q" : "*",
         "sqlite3" : "*"
