@@ -1,4 +1,5 @@
 importScripts( '../vendors/Peg.js' );
+importScripts( '../vendors/LoDash.js' );
 
 var compile = function ( source, callback ) {
 
