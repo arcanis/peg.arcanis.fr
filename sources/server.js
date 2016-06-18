@@ -5,8 +5,8 @@ var Q        = require( 'q' );
 var Sqlite3  = require( 'sqlite3' ).verbose( );
 var Uuid     = require( './uuid' );
 
-var DATABASE_PATH  = process.env.npm_package_config_database;
-var LISTENING_PORT = process.env.npm_package_config_port;
+var DATABASE_PATH  = require( '../config' ).database;
+var LISTENING_PORT = require( '../config' ).port;
 
 var db = new Sqlite3.Database( DATABASE_PATH );
 

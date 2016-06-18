@@ -14,10 +14,5 @@
         "optimist" : "*",
         "q" : "*",
         "sqlite3" : "*"
-    },
-
-    "config": {
-        "database" : "test.db",
-        "port" : 9090
     }
 }
